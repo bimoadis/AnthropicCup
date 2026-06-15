@@ -29,7 +29,27 @@ export async function connectPhantom(): Promise<
 > {
   const provider = getProvider();
   if (!provider) {
-    window.open("https://phantom.app/", "_blank", "noopener");
+    if (typeof window !== "undefined") {
+      const userAgent = window.navigator.userAgent || "";
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      
+      if (isMobile) {
+        const currentUrl = window.location.href;
+        const ref = window.location.origin;
+        const deepLink = `https://phantom.app/ul/browse?ref=${encodeURIComponent(ref)}&url=${encodeURIComponent(currentUrl)}`;
+        window.open(deepLink, "_blank", "noopener");
+        return {
+          ok: false,
+          error: "Redirecting to Phantom Mobile App...",
+        };
+      } else {
+        window.open("https://phantom.app/download", "_blank", "noopener");
+        return {
+          ok: false,
+          error: "Phantom extension not detected. Please install it.",
+        };
+      }
+    }
     return {
       ok: false,
       error: "Phantom not detected. Install it, then try again.",
