@@ -10,6 +10,7 @@ export type MatchMarket = {
   away: string;
   stage: string;
   kickoff: string; // human readable for now; use timestamptz in Supabase
+  rawKickoff?: string; // ISO string from DB
   venue: string;
   status: "open" | "locked" | "settled";
   probs: { home: number; draw: number; away: number };
@@ -209,6 +210,7 @@ export async function getLiveMatchMarkets(): Promise<MatchMarket[]> {
       away: m.away,
       stage: m.stage,
       kickoff: formattedDate,
+      rawKickoff: m.kickoff,
       venue: m.venue,
       status: m.status as "open" | "locked" | "settled",
       probs,
