@@ -5,6 +5,8 @@ import { getLiveMatchMarkets, getLiveMarket } from "@/lib/markets";
 import Outcomes from "@/components/market/Outcomes";
 import PredictionPanel from "@/components/market/PredictionPanel";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

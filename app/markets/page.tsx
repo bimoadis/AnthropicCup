@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getLiveMatchMarkets } from "@/lib/markets";
 import MarketList from "@/components/market/MarketList";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Markets · Anthropic Cup",
   description:
