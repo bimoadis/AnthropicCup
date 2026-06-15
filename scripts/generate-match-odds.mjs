@@ -67,10 +67,14 @@ async function main() {
       };
     });
 
-    // 4. Save to markets.json
-    const outputPath = path.resolve(__dirname, "../markets.json");
-    fs.writeFileSync(outputPath, JSON.stringify(consolidated, null, 2), "utf-8");
-    console.log(`Successfully generated markets.json with ${consolidated.length} matches and odds!`);
+    // 4. Save to markets.json and odds.json
+    const marketsPath = path.resolve(__dirname, "../markets.json");
+    const oddsPath = path.resolve(__dirname, "../odds.json");
+    const jsonString = JSON.stringify(consolidated, null, 2);
+    
+    fs.writeFileSync(marketsPath, jsonString, "utf-8");
+    fs.writeFileSync(oddsPath, jsonString, "utf-8");
+    console.log(`Successfully generated markets.json and odds.json with ${consolidated.length} matches!`);
   } catch (err) {
     console.error("Error generating match odds:", err.message);
   }
