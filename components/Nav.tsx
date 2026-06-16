@@ -5,7 +5,7 @@ export default function Nav() {
     <nav className="nav" aria-label="Main">
       <div className="nav-inner">
         <Link href="/" className="wordmark" style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
-          <img src="/logo.svg" alt="Anthropic Cup Logo" width="24" height="24" style={{ display: "block" }} />
+          <img src="/logo.svg" alt="Anthropic Cup Logo" width="40" height="40" style={{ display: "block" }} />
           <span>
             Anthropic <em>Cup</em>
           </span>
