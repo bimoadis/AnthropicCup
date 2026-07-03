@@ -213,8 +213,24 @@ export default function PredictionPanel({ market }: { market: MatchMarket }) {
           color: "#A8392E",
           lineHeight: 1.55
         }}>
-          You need at least {MIN_ANTHRO_DISPLAY} $ANTHRO to submit a forecast.
-          Acquire tokens to participate.
+          <p style={{ margin: "0 0 10px 0" }}>
+            You need at least {MIN_ANTHRO_DISPLAY} $ANTHRO to submit a forecast.
+          </p>
+          <a
+            href={`https://pump.fun/coin/${process.env.NEXT_PUBLIC_TOKEN_MINT || ""}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn ghost"
+            style={{ 
+              width: "100%", 
+              justifyContent: "center", 
+              color: "#A8392E", 
+              borderColor: "rgba(168,57,46,0.25)",
+              textDecoration: "none"
+            }}
+          >
+            Buy $ANTHRO on pump.fun ↗
+          </a>
         </div>
       )}
 
