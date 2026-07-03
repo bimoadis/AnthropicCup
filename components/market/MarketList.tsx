@@ -11,6 +11,8 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
   const [groupFilter, setGroupFilter] = useState<string>("all");
   const [wallet, setWallet] = useState<string | null>(null);
   const [predictions, setPredictions] = useState<Record<string, { home_score: number; away_score: number }>>({});
+  const [results, setResults] = useState<Record<string, { home_score: number; away_score: number }>>({});
+  const [walletNotification, setWalletNotification] = useState<{ message: string; title?: string } | null>(null);
   const [isFetching, setIsFetching] = useState(false);
 
   const fetchPredictions = async (addr: string) => {
@@ -24,6 +26,9 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
           predMap[p.match_slug] = { home_score: p.home_score, away_score: p.away_score };
         });
         setPredictions(predMap);
+        if (data.results) {
+          setResults(data.results);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -62,14 +67,19 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
             disconnectPhantom();
             setWallet(null);
             setPredictions({});
+            setResults({});
             localStorage.removeItem("phantomWalletSession");
-            alert("Your wallet session has expired after 10 minutes.");
+            setWalletNotification({
+              title: "Session Expired",
+              message: "Your wallet session has expired after 10 minutes."
+            });
           }, timeRemaining);
           return () => clearTimeout(timer);
         } else {
           disconnectPhantom();
           setWallet(null);
           setPredictions({});
+          setResults({});
           localStorage.removeItem("phantomWalletSession");
         }
       } catch (e) {}
@@ -89,6 +99,18 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
     { label: "Third-place", value: "THIRD_PLACE" },
     { label: "Final", value: "FINAL" }
   ];
+
+  // Compute which stages are fully settled (all matches in that stage are settled)
+  const doneStages = new Set(
+    stages
+      .map((s) => s.value)
+      .filter((val) => {
+        const stageMatches = initialMatches.filter(
+          (m) => (m.round || "").toUpperCase() === val
+        );
+        return stageMatches.length > 0 && stageMatches.every((m) => m.status === "settled");
+      })
+  );
 
   const filteredMatches = initialMatches.filter((m) => {
     // 1. Exclude undetermined knockout slots
@@ -156,7 +178,10 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
         paddingBottom: "8px"
       }}>
         <button
-          onClick={() => setFilter("today")}
+          onClick={() => {
+            setFilter("today");
+            setGroupFilter("all");
+          }}
           style={{
             background: "none",
             border: "none",
@@ -176,7 +201,10 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
           Today
         </button>
         <button
-          onClick={() => setFilter("week")}
+          onClick={() => {
+            setFilter("week");
+            setGroupFilter("all");
+          }}
           style={{
             background: "none",
             border: "none",
@@ -196,7 +224,10 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
           This Week
         </button>
         <button
-          onClick={() => setFilter("all")}
+          onClick={() => {
+            setFilter("all");
+            setGroupFilter("all");
+          }}
           style={{
             background: "none",
             border: "none",
@@ -218,6 +249,7 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
         <button
           onClick={() => {
             setFilter("your_forecast");
+            setGroupFilter("all");
             if (wallet && Object.keys(predictions).length === 0) {
               fetchPredictions(wallet);
             }
@@ -269,27 +301,63 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
         >
           All Matches
         </button>
-        {stages.map((k) => (
-          <button
-            key={k.value}
-            onClick={() => setGroupFilter(k.value)}
-            style={{
-              background: groupFilter === k.value ? "var(--ink)" : "transparent",
-              color: groupFilter === k.value ? "var(--paper)" : "var(--ink-soft)",
-              border: `1px solid ${groupFilter === k.value ? "var(--ink)" : "var(--rule-dark)"}`,
-              borderRadius: "2px",
-              fontFamily: "var(--mono)",
-              fontSize: "11px",
-              letterSpacing: "0.05em",
-              textTransform: "uppercase",
-              padding: "5px 12px",
-              cursor: "pointer",
-              transition: "all 0.15s ease"
-            }}
-          >
-            {k.label}
-          </button>
-        ))}
+        {stages.map((k) => {
+          const isDone = doneStages.has(k.value);
+          const isActive = groupFilter === k.value;
+          return (
+            <button
+              key={k.value}
+              onClick={() => { if (!isDone) setGroupFilter(k.value); }}
+              disabled={isDone}
+              style={{
+                position: "relative",
+                background: isActive ? "var(--ink)" : "transparent",
+                color: isActive ? "var(--paper)" : isDone ? "var(--ink-faint)" : "var(--ink-soft)",
+                border: `1px solid ${isActive ? "var(--ink)" : "var(--rule-dark)"}`,
+                borderRadius: "2px",
+                fontFamily: "var(--mono)",
+                fontSize: "11px",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                padding: "5px 12px",
+                cursor: isDone ? "not-allowed" : "pointer",
+                transition: "all 0.15s ease",
+                overflow: "hidden",
+                opacity: isDone && !isActive ? 0.65 : 1
+              }}
+            >
+              {k.label}
+              {isDone && (
+                <span style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  pointerEvents: "none"
+                }}>
+                  <span style={{
+                    display: "block",
+                    fontFamily: "var(--mono)",
+                    fontSize: "10.8px",
+                    fontWeight: 800,
+                    letterSpacing: "0.18em",
+                    color: "#A8392E",
+                    border: "1.8px solid #A8392E",
+                    borderRadius: "2px",
+                    padding: "2px 6px",
+                    transform: "rotate(-12deg)",
+                    background: isActive ? "rgba(168,57,46,0.15)" : "rgba(248,246,242,0.94)",
+                    boxShadow: "0 1px 5px rgba(168,57,46,0.18)",
+                    whiteSpace: "nowrap"
+                  }}>
+                    DONE
+                  </span>
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {filter === "your_forecast" && (
@@ -313,7 +381,10 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
                       expiresAt: Date.now() + 10 * 60 * 1000
                     }));
                   } else {
-                    alert(res.error || "Failed to connect wallet");
+                    setWalletNotification({
+                      title: "Connection Failed",
+                      message: res.error || "Failed to connect wallet"
+                    });
                   }
                 }}
                 style={{
@@ -340,6 +411,7 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
                   await disconnectPhantom();
                   setWallet(null);
                   setPredictions({});
+                  setResults({});
                   localStorage.removeItem("phantomWalletSession");
                 }}
                 style={{
@@ -382,38 +454,204 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
         </div>
       ) : (
         <div className="mlist-grid">
-          {sortedMatches.map((m) => (
-            <Link href={`/markets/${m.slug}`} className="mcard" key={m.slug}>
-              <span className="stage">
-                <span>{m.round}</span>
-                <span>{m.status === "open" ? "Open" : m.status}</span>
-              </span>
-              <p className="teams">
-                {m.home} <em>v</em> {m.away}
-              </p>
-              <p className="meta">
-                {m.kickoff} &middot; {m.venue}
-              </p>
-              <div className="probs mono">
-                <span>
-                  {m.home.split(" ")[0]}
-                  <b>{m.probs.home}%</b>
+          {sortedMatches.map((m) => {
+            const CardTag = filter === "your_forecast" ? "div" : Link;
+            const cardProps = filter === "your_forecast" 
+              ? { className: "mcard" } 
+              : { href: `/markets/${m.slug}`, className: "mcard" };
+
+            return (
+              <CardTag key={m.slug} {...(cardProps as any)}>
+                <span className="stage">
+                  <span>{m.round}</span>
+                  <span>{m.status === "open" ? "Open" : m.status}</span>
                 </span>
-                <span>
-                  Draw<b>{m.probs.draw}%</b>
-                </span>
-                <span>
-                  {m.away.split(" ")[0]}
-                  <b>{m.probs.away}%</b>
-                </span>
-              </div>
-              {predictions[m.slug] && (
-                <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px dashed var(--rule)", fontSize: "12px", color: "var(--ink)", fontFamily: "var(--mono)" }}>
-                  <b>YOUR FORECAST:</b> {m.home.split(" ")[0]} {predictions[m.slug].home_score} - {predictions[m.slug].away_score} {m.away.split(" ")[0]}
+                <p className="teams">
+                  {m.home} <em>v</em> {m.away}
+                </p>
+                <p className="meta">
+                  {m.kickoff} &middot; {m.venue}
+                </p>
+                <div className="probs mono">
+                  <span>
+                    {m.home.split(" ")[0]}
+                    <b>{m.probs.home}%</b>
+                  </span>
+                  <span>
+                    Draw<b>{m.probs.draw}%</b>
+                  </span>
+                  <span>
+                    {m.away.split(" ")[0]}
+                    <b>{m.probs.away}%</b>
+                  </span>
                 </div>
-              )}
-            </Link>
-          ))}
+                {predictions[m.slug] && (() => {
+                  const pred = predictions[m.slug];
+                  const res = results[m.slug];
+                  const isSettled = m.status === "settled";
+
+                  if (!isSettled) {
+                    // Pending — match not yet settled
+                    return (
+                      <div style={{ marginTop: "14px", paddingTop: "14px", borderTop: "1px solid var(--rule)" }}>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-faint)", marginBottom: "6px" }}>Your Forecast</div>
+                        <div style={{ fontFamily: "var(--serif)", fontSize: "16px", color: "var(--ink)", fontWeight: 500, letterSpacing: "-0.01em", marginBottom: "10px" }}>
+                          {m.home.split(" ")[0]} {pred.home_score} — {pred.away_score} {m.away.split(" ")[0]}
+                        </div>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "var(--mono)", fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b45309", background: "rgba(180,83,9,0.06)", border: "1px solid rgba(180,83,9,0.18)", borderRadius: "2px", padding: "4px 10px" }}>
+                          <span>◎</span> Pending
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (!res) {
+                    // Settled but no result data
+                    return (
+                      <div style={{ marginTop: "14px", paddingTop: "14px", borderTop: "1px solid var(--rule)", fontFamily: "var(--mono)", fontSize: "11px", color: "var(--ink-faint)" }}>
+                        Result unavailable
+                      </div>
+                    );
+                  }
+
+                  // Accuracy checks
+                  const predHomeWin = pred.home_score > pred.away_score;
+                  const predDraw = pred.home_score === pred.away_score;
+                  const predAwayWin = pred.home_score < pred.away_score;
+                  const resHomeWin = res.home_score > res.away_score;
+                  const resDraw = res.home_score === res.away_score;
+                  const resAwayWin = res.home_score < res.away_score;
+
+                  const winnerCorrect = (predHomeWin && resHomeWin) || (predDraw && resDraw) || (predAwayWin && resAwayWin);
+                  const goalDiffCorrect = (pred.home_score - pred.away_score) === (res.home_score - res.away_score);
+                  const exactCorrect = pred.home_score === res.home_score && pred.away_score === res.away_score;
+
+                  const isCorrect = exactCorrect;
+                  const accentColor = isCorrect ? "#1E6B4E" : "#A8392E";
+                  const accentBg = isCorrect ? "rgba(30,107,78,0.05)" : "rgba(168,57,46,0.05)";
+                  const accentBorder = isCorrect ? "rgba(30,107,78,0.2)" : "rgba(168,57,46,0.2)";
+                  const statusIcon = isCorrect ? "✓" : "✕";
+                  const statusLabel = isCorrect ? "Forecast Correct" : "Forecast Missed";
+                  const statusNote = isCorrect ? "Exact score predicted." : "The predicted score did not match.";
+
+                  const CheckRow = ({ label, ok }: { label: string; ok: boolean }) => (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: "10.5px", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-soft)" }}>{label}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: ok ? "#1E6B4E" : "#A8392E", fontWeight: 600 }}>{ok ? "✓" : "✕"}</span>
+                    </div>
+                  );
+
+                  const divider = <div style={{ height: "1px", background: "var(--rule)", margin: "10px 0" }} />;
+
+                  return (
+                    <div style={{ marginTop: "14px", paddingTop: "14px", borderTop: "1px solid var(--rule)" }}>
+
+                      {/* YOUR FORECAST */}
+                      <div style={{ fontFamily: "var(--mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-faint)", marginBottom: "5px" }}>Your Forecast</div>
+                      <div style={{ fontFamily: "var(--serif)", fontSize: "17px", fontWeight: 500, color: "var(--ink)", letterSpacing: "-0.01em", marginBottom: "12px" }}>
+                        {m.home.split(" ")[0]} {pred.home_score} — {pred.away_score} {m.away.split(" ")[0]}
+                      </div>
+
+                      {divider}
+
+                      {/* STATUS BANNER */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "8px 0", background: accentBg, border: `1px solid ${accentBorder}`, borderRadius: "2px", marginBottom: "10px" }}>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: "14px", color: accentColor, fontWeight: 700 }}>{statusIcon}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: accentColor, fontWeight: 600 }}>{statusLabel}</span>
+                      </div>
+
+                      {divider}
+
+                      {/* ACTUAL RESULT */}
+                      <div style={{ fontFamily: "var(--mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-faint)", marginBottom: "5px" }}>Actual Result</div>
+                      <div style={{ fontFamily: "var(--serif)", fontSize: "17px", fontWeight: 500, color: "var(--ink)", letterSpacing: "-0.01em", marginBottom: "12px" }}>
+                        {m.home.split(" ")[0]} {res.home_score} — {res.away_score} {m.away.split(" ")[0]}
+                      </div>
+
+                      {divider}
+
+                      {/* ACCURACY BREAKDOWN */}
+                      <CheckRow label="Winner" ok={winnerCorrect} />
+                      <CheckRow label="Goal Difference" ok={goalDiffCorrect} />
+                      <CheckRow label="Exact Score" ok={exactCorrect} />
+
+                      {divider}
+
+                      {/* NOTE */}
+                      <div style={{ fontFamily: "var(--sans)", fontSize: "12px", color: "var(--ink-faint)", fontStyle: "italic" }}>
+                        {statusNote}
+                      </div>
+
+                    </div>
+                  );
+                })()}
+              </CardTag>
+            );
+          })}
+        </div>
+      )}
+
+      {walletNotification && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(23, 20, 14, 0.4)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 100
+        }}>
+          <div style={{
+            background: "var(--paper-raised)",
+            border: "1px solid var(--rule-dark)",
+            borderRadius: "4px",
+            padding: "28px 32px",
+            maxWidth: "400px",
+            width: "95%",
+            boxShadow: "0 12px 32px rgba(23, 20, 14, 0.12)"
+          }}>
+            <h4 style={{
+              fontFamily: "var(--serif)",
+              fontSize: "20px",
+              fontWeight: 500,
+              color: "var(--ink)",
+              marginBottom: "12px",
+              letterSpacing: "-0.01em"
+            }}>
+              {walletNotification.title || "Wallet Notification"}
+            </h4>
+            <p style={{
+              fontFamily: "var(--sans)",
+              fontSize: "14.5px",
+              color: "var(--ink-soft)",
+              lineHeight: 1.6,
+              marginBottom: "20px"
+            }}>
+              {walletNotification.message}
+            </p>
+            <button
+              onClick={() => setWalletNotification(null)}
+              style={{
+                width: "100%",
+                background: "var(--ink)",
+                color: "var(--paper)",
+                border: "none",
+                padding: "10px 16px",
+                fontFamily: "var(--mono)",
+                fontSize: "12px",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                borderRadius: "2px",
+                cursor: "pointer",
+                transition: "opacity 0.15s ease"
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.opacity = "0.85")}
+              onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
     </div>

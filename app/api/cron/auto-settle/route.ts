@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Connection, PublicKey, Keypair, Transaction, SystemProgram, sendAndConfirmTransaction } from "@solana/web3.js";
+import { getOrCreateAssociatedTokenAccount, createTransferInstruction, getMint } from "@solana/spl-token";
 import bs58 from "bs58";
 
 function normalizeTeamName(name: string) {
@@ -91,24 +92,47 @@ async function sendTokens(recipientWallet: string, amount: number): Promise<stri
     return mockSig;
   }
 
-  // Real on-chain transaction
-  // Note: For SPL-Tokens, we would send a token transfer.
-  // Here is a standard transfer template. If tokenMint is Solana Native (SOL) or custom SPL Token:
-  // For SPL Token, we need spl-token instructions. Since we only depend on @solana/web3.js,
-  // we can use SystemProgram.transfer for SOL/LAMPORTS as fallback, or standard SPL transfer.
-  // Since spl-token package is not in package.json, we can construct the SPL transfer manually
-  // or use SOL transfer. For this implementation brief, we will send native SOL as fallback,
-  // or mock it. To be extremely robust and avoid dependencies issues, we write a standard SOL transfer:
+  // Real on-chain transaction for SPL Token
   const connection = new Connection(rpcUrl, "confirmed");
+  const mintPublicKey = new PublicKey(tokenMint);
+  const recipientPublicKey = new PublicKey(recipientWallet);
+
+  // Get mint info to dynamically fetch decimals
+  const mintInfo = await getMint(connection, mintPublicKey);
+  const decimals = mintInfo.decimals;
+  
+  // Convert UI amount to raw token amount (BigInt for precision)
+  const rawAmount = BigInt(amount * Math.pow(10, decimals));
+
+  // Get or Create Associated Token Account for Admin (Sender)
+  const senderATA = await getOrCreateAssociatedTokenAccount(
+    connection,
+    adminKeypair,
+    mintPublicKey,
+    adminKeypair.publicKey
+  );
+
+  // Get or Create Associated Token Account for Winner (Recipient)
+  // Admin pays the rent fee if it doesn't exist (~0.002 SOL)
+  const recipientATA = await getOrCreateAssociatedTokenAccount(
+    connection,
+    adminKeypair,
+    mintPublicKey,
+    recipientPublicKey
+  );
+
+  // Create the transfer instruction
   const transaction = new Transaction().add(
-    SystemProgram.transfer({
-      fromPubkey: adminKeypair.publicKey,
-      toPubkey: new PublicKey(recipientWallet),
-      lamports: amount * 1000, // Small fraction for demo/utility
-    })
+    createTransferInstruction(
+      senderATA.address,
+      recipientATA.address,
+      adminKeypair.publicKey,
+      rawAmount
+    )
   );
 
   const signature = await sendAndConfirmTransaction(connection, transaction, [adminKeypair]);
+  console.log(`[AIRDROP] Real on-chain transfer of ${amount} $ANTHRO to ${recipientWallet}. Tx: ${signature}`);
   return signature;
 }
 

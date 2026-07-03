@@ -97,6 +97,50 @@ export async function signPhantomMessage(
 }
 
 export function shortAddress(addr: string) {
-  return addr.slice(0, 4) + "…" + addr.slice(-4);
+  return addr.slice(0, 4) + "\u2026" + addr.slice(-4);
 }
 
+/**
+ * Checks the $ANTHRO SPL token balance for a given wallet address.
+ * Uses the Solana JSON-RPC directly (no extra dependencies).
+ * Returns the UI amount (human-readable) or null on failure.
+ */
+export async function checkAnthroBalance(walletAddress: string): Promise<number | null> {
+  const mint = process.env.NEXT_PUBLIC_TOKEN_MINT;
+  if (!mint) return null; // No mint configured — skip check
+
+  const rpcUrl =
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL ||
+    "https://api.mainnet-beta.solana.com";
+
+  try {
+    const body = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getTokenAccountsByOwner",
+      params: [
+        walletAddress,
+        { mint },
+        { encoding: "jsonParsed" },
+      ],
+    };
+
+    const res = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const json = await res.json();
+    const accounts: Array<{ account: { data: { parsed: { info: { tokenAmount: { uiAmount: number } } } } } }> =
+      json?.result?.value ?? [];
+
+    let total = 0;
+    for (const acc of accounts) {
+      total += acc.account.data.parsed.info.tokenAmount.uiAmount ?? 0;
+    }
+    return total;
+  } catch {
+    return null;
+  }
+}

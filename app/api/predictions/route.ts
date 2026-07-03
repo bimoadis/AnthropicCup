@@ -182,7 +182,23 @@ export async function GET(request: Request) {
       );
     }
 
-    return NextResponse.json({ ok: true, data });
+    // Fetch actual results for these prediction slugs
+    const resultsMap: Record<string, { home_score: number; away_score: number }> = {};
+    if (data && data.length > 0) {
+      const slugs = data.map((p) => p.match_slug);
+      const { data: results, error: resError } = await supabaseAdmin
+        .from("results")
+        .select("match_slug, home_score, away_score")
+        .in("match_slug", slugs);
+
+      if (!resError && results) {
+        results.forEach((r) => {
+          resultsMap[r.match_slug] = { home_score: r.home_score, away_score: r.away_score };
+        });
+      }
+    }
+
+    return NextResponse.json({ ok: true, data, results: resultsMap });
   } catch (err) {
     return NextResponse.json(
       { ok: false, error: err instanceof Error ? err.message : "Internal Server Error" },
