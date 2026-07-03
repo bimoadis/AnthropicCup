@@ -262,12 +262,7 @@ export async function getLiveMatchMarkets(): Promise<MatchMarket[]> {
       away: (m.away_win !== null && m.away_win !== undefined) ? m.away_win : 27
     };
 
-    if (stats && stats.total > 0) {
-      const home = Math.round((stats.homeWins / stats.total) * 100);
-      const away = Math.round((stats.awayWins / stats.total) * 100);
-      const draw = 100 - home - away;
-      probs = { home, draw, away };
-    }
+    // (Removed: We no longer override probs with user prediction stats as per user request)
 
     const d = new Date(m.kickoff);
     const options: Intl.DateTimeFormatOptions = {
