@@ -30,13 +30,13 @@ const minBalance = parseFloat(process.env.NEXT_PUBLIC_MIN_ANTHROPOS || "1000");
 const adminKeypairSecret = process.env.ADMIN_WALLET_KEYPAIR;
 
 // Reward values
-const REWARD_EXACT_SCORE = 100; // $ANTHROPOS amount for exact score
-const REWARD_CORRECT_WINNER = 25; // $ANTHROPOS amount for correct winner only
+const REWARD_EXACT_SCORE = 1000; // $ANTHROPOS amount for exact score
+const REWARD_CORRECT_WINNER = 1000; // $ANTHROPOS amount for correct winner only
 
-const supabaseAdmin = supabaseUrl && supabaseServiceKey 
+const supabaseAdmin = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false }
-    })
+    auth: { persistSession: false }
+  })
   : null;
 
 // Parse the admin keypair safely
@@ -100,7 +100,7 @@ async function sendTokens(recipientWallet: string, amount: number): Promise<stri
   // Get mint info to dynamically fetch decimals
   const mintInfo = await getMint(connection, mintPublicKey);
   const decimals = mintInfo.decimals;
-  
+
   // Convert UI amount to raw token amount (BigInt for precision)
   const rawAmount = BigInt(amount * Math.pow(10, decimals));
 
@@ -229,11 +229,11 @@ export async function GET(request: Request) {
         .eq("match_slug", match.slug);
 
       if (predError || !predictions || predictions.length === 0) {
-        report.push({ 
-          match: match.slug, 
-          status: "settled", 
+        report.push({
+          match: match.slug,
+          status: "settled",
           score: `${homeScore}-${awayScore}`,
-          predictions_processed: 0 
+          predictions_processed: 0
         });
         continue;
       }
@@ -244,7 +244,7 @@ export async function GET(request: Request) {
       // 3.4 Process predictions & verify balances & send rewards
       for (const pred of predictions) {
         const predOutcome = Math.sign(pred.home_score - pred.away_score);
-        
+
         let rewardAmount = 0;
         let outcomeType = "";
 
@@ -252,7 +252,7 @@ export async function GET(request: Request) {
         if (pred.home_score === homeScore && pred.away_score === awayScore) {
           rewardAmount = REWARD_EXACT_SCORE;
           outcomeType = "exact_score";
-        } 
+        }
         // Check if winner/draw matches
         else if (predOutcome === matchOutcome) {
           rewardAmount = REWARD_CORRECT_WINNER;
@@ -280,7 +280,7 @@ export async function GET(request: Request) {
       for (const winner of winners) {
         try {
           const txSig = await sendTokens(winner.wallet, winner.amount);
-          
+
           // Log in database
           const { error: logError } = await supabaseAdmin
             .from("airdrop_log")
