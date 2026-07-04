@@ -104,7 +104,7 @@ export async function POST(request: Request) {
     // Check if match is open
     const { data: match, error: matchError } = await supabaseAdmin
       .from("matches")
-      .select("status")
+      .select("status, kickoff")
       .eq("slug", match_slug)
       .single();
 
@@ -115,9 +115,11 @@ export async function POST(request: Request) {
       );
     }
 
-    if (match.status !== "open") {
+    const now = Date.now();
+    const kickoffTime = new Date(match.kickoff).getTime();
+    if (match.status !== "open" || now >= kickoffTime) {
       return NextResponse.json(
-        { ok: false, error: `Cannot submit prediction. Match status is ${match.status}.` },
+        { ok: false, error: `Cannot submit prediction. Match is locked or kickoff has passed.` },
         { status: 400 }
       );
     }

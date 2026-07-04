@@ -275,6 +275,11 @@ export async function getLiveMatchMarkets(): Promise<MatchMarket[]> {
     };
     const formattedDate = d.toLocaleString("en-US", options);
 
+    let displayStatus = m.status as "open" | "locked" | "settled";
+    if (displayStatus === "open" && Date.now() >= d.getTime()) {
+      displayStatus = "locked";
+    }
+
     return {
       slug: m.slug,
       home: m.home,
@@ -283,7 +288,7 @@ export async function getLiveMatchMarkets(): Promise<MatchMarket[]> {
       kickoff: formattedDate,
       rawKickoff: m.kickoff,
       venue: m.venue,
-      status: m.status as "open" | "locked" | "settled",
+      status: displayStatus,
       probs,
     };
   });

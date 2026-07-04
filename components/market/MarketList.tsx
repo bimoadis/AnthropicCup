@@ -96,11 +96,26 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
     { label: "Round of 16", value: "LAST_16" },
     { label: "Quarter-finals", value: "QUARTER_FINALS" },
     { label: "Semi-finals", value: "SEMI_FINALS" },
-    { label: "Third-place", value: "THIRD_PLACE" },
     { label: "Final", value: "FINAL" }
   ];
 
-  // Compute which stages are fully settled (all matches in that stage are settled)
+  const isDetermined = (name: string) => {
+    const lower = (name || "").toLowerCase();
+    return !lower.includes("winner") &&
+      !lower.includes("runner") &&
+      !lower.includes("loser") &&
+      !lower.includes("tbd");
+  };
+
+  const stageOrder = ["GROUP_STAGE", "LAST_32", "LAST_16", "QUARTER_FINALS", "SEMI_FINALS", "THIRD_PLACE", "FINAL"];
+  const highestStageWithMatches = stageOrder.reduce((max, val, i) => {
+    const hasDeterminedMatch = initialMatches.some(m => 
+      (m.round || "").toUpperCase() === val && isDetermined(m.home) && isDetermined(m.away)
+    );
+    return hasDeterminedMatch ? Math.max(max, i) : max;
+  }, -1);
+
+  // Compute which stages are fully settled (all matches in that stage are settled or past 4 hours)
   const doneStages = new Set(
     stages
       .map((s) => s.value)
@@ -108,7 +123,20 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
         const stageMatches = initialMatches.filter(
           (m) => (m.round || "").toUpperCase() === val
         );
-        return stageMatches.length > 0 && stageMatches.every((m) => m.status === "settled");
+        if (stageMatches.length > 0) {
+          return stageMatches.every((m) => {
+            if (m.status === "settled") return true;
+            if (m.rawKickoff) {
+              const kickoffTime = new Date(m.rawKickoff).getTime();
+              // Consider done if 4 hours have passed since kickoff
+              if (Date.now() - kickoffTime > 4 * 60 * 60 * 1000) return true;
+            }
+            return false;
+          });
+        }
+        // If no matches, consider it done if it's before the highest stage we have matches for
+        const stageIndex = stageOrder.indexOf(val);
+        return stageIndex !== -1 && stageIndex < highestStageWithMatches;
       })
   );
 
