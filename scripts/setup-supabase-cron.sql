@@ -18,27 +18,29 @@ SELECT cron.unschedule('auto-lock-matches');
 SELECT cron.unschedule('auto-settle-matches');
 
 -- 3. Schedule 'auto-lock-matches' (Runs every minute)
--- Checks if any open match's kickoff time has passed and locks it.
+-- IMPORTANT: Replace 'https://YOUR_VERCEL_APP.vercel.app' with your actual website URL
+-- IMPORTANT: Replace 'YOUR_CRON_SECRET' with your CRON_SECRET value
 SELECT cron.schedule(
   'auto-lock-matches',
   '* * * * *',
   $$
   SELECT net.http_get(
-    url := 'https://anthroposcup.com/api/cron/auto-lock',
-    headers := '{"Authorization": "Bearer super_secret_cron_key_fable_cup_2026"}'::jsonb
+    url := 'https://YOUR_VERCEL_APP.vercel.app/api/cron/auto-lock',
+    headers := '{"Authorization": "Bearer YOUR_CRON_SECRET"}'::jsonb
   );
   $$
 );
 
--- 4. Schedule 'auto-settle-matches' (Runs every 5 minutes)
--- Fetches results for locked matches, updates scores, computes winners, and processes Solana reward payouts.
+-- 4. Schedule 'auto-settle-matches' (Runs every 10 minutes)
+-- IMPORTANT: Replace 'https://YOUR_VERCEL_APP.vercel.app' with your actual website URL
+-- IMPORTANT: Replace 'YOUR_CRON_SECRET' with your CRON_SECRET value
 SELECT cron.schedule(
   'auto-settle-matches',
-  '0 */3 * * *',
+  '*/10 * * * *',
   $$
   SELECT net.http_get(
-    url := 'https://anthroposcup.com/api/cron/auto-settle',
-    headers := '{"Authorization": "Bearer super_secret_cron_key_fable_cup_2026"}'::jsonb
+    url := 'https://YOUR_VERCEL_APP.vercel.app/api/cron/auto-settle',
+    headers := '{"Authorization": "Bearer YOUR_CRON_SECRET"}'::jsonb
   );
   $$
 );
