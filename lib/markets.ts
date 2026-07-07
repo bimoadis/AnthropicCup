@@ -164,48 +164,93 @@ export type OutrightRow = {
 export const outright: OutrightRow[] = [
   {
     rank: 1,
-    name: "Argentina",
-    note: "Defending champions · 2022",
-    prob: 17.5,
-    delta: 0.8,
+    name: "France",
+    note: "Reigning runners-up · two titles",
+    prob: 33.0,
+    delta: 1.2,
     spark:
-      "M0,12 L12,14 L24,11 L36,15 L48,13 L60,17 L72,16 L84,19 L96,17 L108,20 L120,19",
+      "M0,24 L12,22 L24,25 L36,19 L48,20 L60,15 L72,17 L84,12 L96,14 L108,10 L120,8",
   },
   {
     rank: 2,
-    name: "France",
-    note: "Finalists in two of the last two",
-    prob: 15.2,
-    delta: 0.4,
-    spark:
-      "M0,20 L12,18 L24,21 L36,17 L48,18 L60,14 L72,16 L84,13 L96,15 L108,13 L120,12",
-  },
-  {
-    rank: 3,
-    name: "England",
-    note: "No title since 1966",
-    prob: 12.8,
-    delta: 0.2,
-    spark:
-      "M0,26 L12,24 L24,26 L36,22 L48,23 L60,19 L72,21 L84,16 L96,18 L108,13 L120,11",
-  },
-  {
-    rank: 4,
     name: "Spain",
     note: "European champions · 2024",
-    prob: 10.5,
-    delta: -0.1,
+    prob: 18.0,
+    delta: 0.5,
     spark:
       "M0,22 L12,20 L24,22 L36,18 L48,19 L60,17 L72,18 L84,15 L96,17 L108,16 L120,15",
   },
   {
+    rank: 3,
+    name: "Argentina",
+    note: "Defending champions · 2022",
+    prob: 18.0,
+    delta: -0.8,
+    spark:
+      "M0,12 L12,14 L24,11 L36,15 L48,13 L60,17 L72,16 L84,19 L96,17 L108,20 L120,19",
+  },
+  {
+    rank: 4,
+    name: "England",
+    note: "No title since 1966",
+    prob: 15.0,
+    delta: 0.4,
+    spark:
+      "M0,26 L12,24 L24,26 L36,22 L48,23 L60,19 L72,21 L84,16 L96,18 L108,13 L120,11",
+  },
+  {
     rank: 5,
-    name: "Germany",
-    note: "Host nation hopes",
-    prob: 9.1,
-    delta: 0.5,
+    name: "Norway",
+    note: "Dark horse contenders",
+    prob: 6.0,
+    delta: 0.2,
     spark:
       "M0,28 L12,25 L24,26 L36,20 L48,22 L60,18 L72,15 L84,16 L96,12 L108,10 L120,9",
+  },
+  {
+    rank: 6,
+    name: "Colombia",
+    note: "Strong South American contenders",
+    prob: 3.0,
+    delta: 0.1,
+    spark:
+      "M0,30 L12,29 L24,28 L36,27 L48,26 L60,25 L72,24 L84,23 L96,22 L108,21 L120,20",
+  },
+  {
+    rank: 7,
+    name: "Morocco",
+    note: "Semi-finalists in 2022",
+    prob: 3.0,
+    delta: 0.0,
+    spark:
+      "M0,25 L12,24 L24,25 L36,23 L48,24 L60,22 L72,23 L84,21 L96,22 L108,20 L120,18",
+  },
+  {
+    rank: 8,
+    name: "Belgium",
+    note: "Experienced squad",
+    prob: 2.0,
+    delta: -0.2,
+    spark:
+      "M0,15 L12,16 L24,18 L36,19 L48,22 L60,24 L72,26 L84,27 L96,28 L108,29 L120,30",
+  },
+  {
+    rank: 9,
+    name: "Switzerland",
+    note: "Consistently reach knockouts",
+    prob: 1.0,
+    delta: 0.0,
+    spark:
+      "M0,28 L12,28 L24,27 L36,27 L48,28 L60,28 L72,27 L84,27 L96,28 L108,28 L120,28",
+  },
+  {
+    rank: 10,
+    name: "Egypt",
+    note: "Pharaohs of Africa",
+    prob: 0.0,
+    delta: 0.0,
+    spark:
+      "M0,32 L12,32 L24,32 L36,32 L48,32 L60,32 L72,32 L84,32 L96,32 L108,32 L120,32",
   },
 ];
 

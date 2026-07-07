@@ -109,7 +109,7 @@ export default function MarketBoard() {
       ))}
 
       <div className="board-foot mono">
-        <span>32 other nations trade below 8%</span>
+        <span>38 other nations trade below 1%</span>
         <span>Updated continuously &middot; illustrative data</span>
       </div>
     </div>
