@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CopyAddress from "./CopyAddress";
 
 export default function Footer() {
   return (
@@ -25,6 +26,7 @@ export default function Footer() {
               </svg>
             </a>
           </div>
+          <CopyAddress variant="footer" />
           <span className="mono">&copy; 2026 Anthropos Cup</span>
         </div>
         <p className="disclaimer">

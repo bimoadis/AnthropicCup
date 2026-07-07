@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CopyAddress from "@/components/CopyAddress";
 
 const STATEMENTS = [
   { quote: "\u201CBrazil will win.\u201D", prob: 18.2, delta: 0.4 },
@@ -70,6 +71,12 @@ export default function Hero() {
         { autoAlpha: 1, y: 0, scale: 1, duration: 1.0, ease: "power3.out" }
       );
       tl.set(".hero-reveal", { autoAlpha: 1 }, "<");
+      tl.fromTo(
+        ".hero-reveal .hero-ca",
+        { autoAlpha: 0, y: -10 },
+        { autoAlpha: 1, y: 0, duration: 0.5 },
+        "-=0.8"
+      );
       tl.fromTo(".hero-reveal .sub", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.45");
       tl.fromTo(".hero-reveal .tag", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.45 }, "-=0.2");
       tl.fromTo(".hero-reveal .cta-row", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.15");
@@ -117,6 +124,7 @@ export default function Hero() {
         ))}
 
         <div className="hero-reveal">
+          <CopyAddress variant="hero" />
           <h1 className="mark">
             Anthropos <em>Cup</em>
           </h1>

@@ -3,6 +3,7 @@ import Hero from "@/components/home/Hero";
 import MarketBoard from "@/components/home/MarketBoard";
 import WhyMarkets from "@/components/home/WhyMarkets";
 import Tokenomics from "@/components/home/Tokenomics";
+import CopyAddress from "@/components/CopyAddress";
 
 export default function Home() {
   return (
@@ -166,6 +167,7 @@ export default function Home() {
                   It exists to make participation, governance, and rewards
                   work, nothing else.
                 </p>
+                <CopyAddress />
               </div>
               <div className="util-list reveal">
                 <div className="util-item">
