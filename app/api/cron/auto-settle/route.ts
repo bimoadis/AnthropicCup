@@ -30,8 +30,8 @@ const minBalance = parseFloat(process.env.NEXT_PUBLIC_MIN_ANTHROPOS || "1000");
 const adminKeypairSecret = process.env.ADMIN_WALLET_KEYPAIR;
 
 // Reward values
-const REWARD_EXACT_SCORE = 1000; // $ANTHROPOS amount for exact score
-const REWARD_CORRECT_WINNER = 1000; // $ANTHROPOS amount for correct winner only
+const REWARD_EXACT_SCORE = 1000; // $ANTHRO amount for exact score
+const REWARD_CORRECT_WINNER = 1000; // $ANTHRO amount for correct winner only
 
 const supabaseAdmin = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey, {

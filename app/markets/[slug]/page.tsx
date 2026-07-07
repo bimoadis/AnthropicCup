@@ -95,7 +95,7 @@ export default async function MarketDetail({ params }: Props) {
           <div className="rule-item">
             <span className="k">Eligibility</span>
             <span className="v">
-              One forecast per wallet per match. A minimum $ANTHROPOS balance is
+              One forecast per wallet per match. A minimum $ANTHRO balance is
               required at the time of submission and at settlement.
             </span>
           </div>

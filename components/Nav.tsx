@@ -14,7 +14,7 @@ export default function Nav() {
           <Link href="/#idea">The idea</Link>
           <Link href="/markets">Markets</Link>
           <Link href="/#how">How it works</Link>
-          <Link href="/#token">$ANTHROPOS</Link>
+          <Link href="/#token">$ANTHRO</Link>
           <Link href="/#roadmap">Roadmap</Link>
           <a
             href="https://x.com/AnthroposCup"

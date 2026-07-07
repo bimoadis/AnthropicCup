@@ -32,7 +32,7 @@ export default function Footer() {
         <p className="disclaimer">
           Anthropos Cup is a skill-based forecasting platform. Probabilities shown
           on this site are illustrative until live markets open. Anthropos Cup is
-          not affiliated with FIFA. $ANTHROPOS is a utility token used for platform
+          not affiliated with FIFA. $ANTHRO is a utility token used for platform
           access, governance, and rewards; nothing on this site is financial
           advice or an offer of securities.
         </p>

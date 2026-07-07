@@ -149,13 +149,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============ $ANTHROPOS ============ */}
+        {/* ============ $ANTHRO ============ */}
         <section id="token">
           <div className="wrap">
             <div className="token-grid">
               <div className="reveal">
                 <span className="eyebrow" style={{ marginBottom: 20 }}>
-                  05 &middot; $ANTHROPOS
+                  05 &middot; $ANTHRO
                 </span>
                 <h2 style={{ marginBottom: 22 }}>
                   One token.
@@ -163,7 +163,7 @@ export default function Home() {
                   Pure utility.
                 </h2>
                 <p className="lede">
-                  $ANTHROPOS is the access and coordination layer of the platform.
+                  $ANTHRO is the access and coordination layer of the platform.
                   It exists to make participation, governance, and rewards
                   work, nothing else.
                 </p>
@@ -174,7 +174,7 @@ export default function Home() {
                   <span className="k">Access</span>
                   <span className="v">
                     <b>Prediction participation</b>
-                    Holding $ANTHROPOS is what lets you enter markets and submit
+                    Holding $ANTHRO is what lets you enter markets and submit
                     forecasts across the tournament.
                   </span>
                 </div>

@@ -79,7 +79,7 @@ export async function POST(request: Request) {
 
         if (balance < minBalance) {
           return NextResponse.json(
-            { ok: false, error: `Insufficient $ANTHROPOS balance. Required: ${minBalance.toLocaleString()}, Current: ${balance.toLocaleString()}` },
+            { ok: false, error: `Insufficient $ANTHRO balance. Required: ${minBalance.toLocaleString()}, Current: ${balance.toLocaleString()}` },
             { status: 403 }
           );
         }
