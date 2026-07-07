@@ -6,7 +6,6 @@ import { connectPhantom, disconnectPhantom, shortAddress } from "@/lib/wallet";
 import type { MatchMarket } from "@/lib/markets";
 
 export default function MarketList({ initialMatches }: { initialMatches: MatchMarket[] }) {
-  // Default filter is set to "today" as requested
   const [filter, setFilter] = useState<"today" | "week" | "all" | "your_forecast">("today");
   const [groupFilter, setGroupFilter] = useState<string>("all");
   const [wallet, setWallet] = useState<string | null>(null);
@@ -56,7 +55,7 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
 
   useEffect(() => {
     if (!wallet) return;
-    
+
     const sessionStr = localStorage.getItem("phantomWalletSession");
     if (sessionStr) {
       try {
@@ -82,7 +81,7 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
           setResults({});
           localStorage.removeItem("phantomWalletSession");
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [wallet]);
 
@@ -109,7 +108,7 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
 
   const stageOrder = ["GROUP_STAGE", "LAST_32", "LAST_16", "QUARTER_FINALS", "SEMI_FINALS", "THIRD_PLACE", "FINAL"];
   const highestStageWithMatches = stageOrder.reduce((max, val, i) => {
-    const hasDeterminedMatch = initialMatches.some(m => 
+    const hasDeterminedMatch = initialMatches.some(m =>
       (m.round || "").toUpperCase() === val && isDetermined(m.home) && isDetermined(m.away)
     );
     return hasDeterminedMatch ? Math.max(max, i) : max;
@@ -484,8 +483,8 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
         <div className="mlist-grid">
           {sortedMatches.map((m) => {
             const CardTag = filter === "your_forecast" ? "div" : Link;
-            const cardProps = filter === "your_forecast" 
-              ? { className: "mcard" } 
+            const cardProps = filter === "your_forecast"
+              ? { className: "mcard" }
               : { href: `/markets/${m.slug}`, className: "mcard" };
 
             return (
@@ -498,8 +497,9 @@ export default function MarketList({ initialMatches }: { initialMatches: MatchMa
                   {m.home} <em>v</em> {m.away}
                 </p>
                 <p className="meta">
-                  {m.kickoff} &middot; {m.venue}
+                  {m.kickoff}
                 </p>
+
                 <div className="probs mono">
                   <span>
                     {m.home.split(" ")[0]}

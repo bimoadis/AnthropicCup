@@ -61,7 +61,6 @@ export default async function MarketDetail({ params }: Props) {
         </h1>
         <div className="match-meta mono">
           <span>{market.kickoff}</span>
-          <span>{market.venue}</span>
           <span className="live-dot">
             <i />
             Market open
