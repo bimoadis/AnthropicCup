@@ -81,8 +81,8 @@ export const matchMarkets: MatchMarket[] = [
     probs: { home: 51, draw: 27, away: 22 },
   },
   {
-    slug: "bra-arg-quarter",
-    home: "Brazil",
+    slug: "por-arg-quarter",
+    home: "Portugal",
     away: "Argentina",
     round: "Quarterfinals",
     kickoff: "Sun 21 Jun · 20:00 ET",
@@ -121,8 +121,8 @@ export const matchMarkets: MatchMarket[] = [
     probs: { home: 45, draw: 29, away: 26 },
   },
   {
-    slug: "bra-fra-semi",
-    home: "Brazil",
+    slug: "por-fra-semi",
+    home: "Portugal",
     away: "France",
     round: "Semifinals",
     kickoff: "Sun 28 Jun · 20:00 ET",
@@ -141,8 +141,8 @@ export const matchMarkets: MatchMarket[] = [
     probs: { home: 50, draw: 27, away: 23 },
   },
   {
-    slug: "bra-arg-final",
-    home: "Brazil",
+    slug: "fra-arg-final",
+    home: "France",
     away: "Argentina",
     round: "Final",
     kickoff: "Sun 5 Jul · 20:00 ET",
@@ -164,48 +164,48 @@ export type OutrightRow = {
 export const outright: OutrightRow[] = [
   {
     rank: 1,
-    name: "Brazil",
-    note: "Record five titles · last won 2002",
-    prob: 18.2,
-    delta: 0.4,
-    spark:
-      "M0,24 L12,22 L24,25 L36,19 L48,20 L60,15 L72,17 L84,12 L96,14 L108,10 L120,8",
-  },
-  {
-    rank: 2,
     name: "Argentina",
     note: "Defending champions · 2022",
-    prob: 15.1,
-    delta: -0.2,
+    prob: 17.5,
+    delta: 0.8,
     spark:
       "M0,12 L12,14 L24,11 L36,15 L48,13 L60,17 L72,16 L84,19 L96,17 L108,20 L120,19",
   },
   {
-    rank: 3,
+    rank: 2,
     name: "France",
     note: "Finalists in two of the last two",
-    prob: 13.6,
-    delta: 0.1,
+    prob: 15.2,
+    delta: 0.4,
     spark:
       "M0,20 L12,18 L24,21 L36,17 L48,18 L60,14 L72,16 L84,13 L96,15 L108,13 L120,12",
   },
   {
-    rank: 4,
+    rank: 3,
     name: "England",
     note: "No title since 1966",
-    prob: 11.4,
-    delta: 0.7,
+    prob: 12.8,
+    delta: 0.2,
     spark:
       "M0,26 L12,24 L24,26 L36,22 L48,23 L60,19 L72,21 L84,16 L96,18 L108,13 L120,11",
   },
   {
-    rank: 5,
+    rank: 4,
     name: "Spain",
     note: "European champions · 2024",
-    prob: 8.9,
-    delta: 0.3,
+    prob: 10.5,
+    delta: -0.1,
     spark:
       "M0,22 L12,20 L24,22 L36,18 L48,19 L60,17 L72,18 L84,15 L96,17 L108,16 L120,15",
+  },
+  {
+    rank: 5,
+    name: "Germany",
+    note: "Host nation hopes",
+    prob: 9.1,
+    delta: 0.5,
+    spark:
+      "M0,28 L12,25 L24,26 L36,20 L48,22 L60,18 L72,15 L84,16 L96,12 L108,10 L120,9",
   },
 ];
 

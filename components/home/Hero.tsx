@@ -7,10 +7,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CopyAddress from "@/components/CopyAddress";
 
 const STATEMENTS = [
-  { quote: "\u201CBrazil will win.\u201D", prob: 18.2, delta: 0.4 },
-  { quote: "\u201CArgentina will repeat.\u201D", prob: 15.1, delta: -0.2 },
-  { quote: "\u201CEngland breaks the curse.\u201D", prob: 11.4, delta: 0.7 },
-  { quote: "\u201CFrance dominates.\u201D", prob: 13.6, delta: 0.1 },
+  { quote: "\u201CArgentina will repeat.\u201D", prob: 17.5, delta: 0.8 },
+  { quote: "\u201CGermany dominates.\u201D", prob: 9.1, delta: 0.5 },
+  { quote: "\u201CEngland breaks the curse.\u201D", prob: 12.8, delta: 0.2 },
+  { quote: "\u201CFrance dominates.\u201D", prob: 15.2, delta: 0.4 },
   { quote: "Everyone has a prediction.", prob: null, delta: 0 },
   { quote: "A billion opinions.", prob: null, delta: 0 },
   { quote: "One probability.", prob: null, delta: 0, italic: true },
